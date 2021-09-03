@@ -31,51 +31,58 @@ var userCreate = [];
 
 async function addClient(user) {
     let urlUserMasterData = `https://${account}.myvtex.com/api/dataentities/CL/documents`;
-    const data = {
-        ...user, 
-        ...campos
-    }
-    try {
-        await fetch(`${urlUserMasterData}`, {
-            method: 'POST',
-            headers: {
-                Accept: "application/vnd.vtex.ds.v10+json",
-                "x-vtex-api-appkey": `${x_vtex_api_appkey}`,
-                "x-vtex-api-apptoken": `${x_vtex_api_apptoken}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ...user, campo })
-        });
-    }
-    catch (err) {
-        console.error(err);
-    }
-    finally {
-        userCreate.push(data);
-    }
-}
 
-async function updateClient(email) {
-    let urlUserMasterData = `https://${account}.myvtex.com/api/dataentities/CL/documents`;
     const data = {
-        ...user, 
+        ...user,
         ...campos
     }
+
     try {
         await fetch(`${urlUserMasterData}`, {
             method: 'PATCH',
             headers: {
                 Accept: "application/vnd.vtex.ds.v10+json",
-                "x-vtex-api-appkey": `${x_vtex_api_appkey}`,
-                "x-vtex-api-apptoken": `${x_vtex_api_apptoken}`,
+                "x-vtex-api-appkey": `${appkey}`,
+                "x-vtex-api-apptoken": `${apptoken}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data)
         });
     }
+
     catch (err) {
         console.error(err);
     }
+
+    finally {
+        emailUpdate.push(data);
+    }
+}
+
+async function updateClient(user) {
+    let urlUserMasterData = `https://${account}.myvtex.com/api/dataentities/CL/documents`;
+    const data = {
+        ...user, 
+        ...campos
+    }
+
+    try {
+        await fetch(`${urlUserMasterData}`, {
+            method: 'PATCH',
+            headers: {
+                Accept: "application/vnd.vtex.ds.v10+json",
+                "x-vtex-api-appkey": `${appkey}`,
+                "x-vtex-api-apptoken": `${apptoken}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    catch (err) {
+        console.error(err);
+    }
+
     finally {
         emailUpdate.push(data);
     }
@@ -89,8 +96,8 @@ async function getClient(user, index) {
             crossDomain: !0,
             headers: {
                 Accept: "application/vnd.vtex.ds.v10+json",
-                "x-vtex-api-appkey": `${x_vtex_api_appkey}`,
-                "x-vtex-api-apptoken": `${x_vtex_api_apptoken}`,
+                "x-vtex-api-appkey": `${appkey}`,
+                "x-vtex-api-apptoken": `${apptoken}`,
                 "Content-Type": "application/json",
             }
         })
@@ -115,25 +122,28 @@ async function getClient(user, index) {
     }
 }
 
+array.forEach(item => item.email = item.email.toLowerCase());
+
 array.map(async(user, index) => {
     const response = await getClient(user, index)
     let urlUserGet = `https://${account}.myvtex.com/api/checkout/pub/profiles?email=${user.email}&_fields=_all`;
-    if (response.userProfileId == null) {
+    if (response.userProfileId === null) {
         addClient(user)
-        emailNotFound.push({...user,urlUserGet});
+        emailNotFound.push({...user,urlUserGet,response});
     } else {
-        updateClient(user.email)
-        emailFound.push({...user,urlUserGet})
+        updateClient(user)
+        emailFound.push({...user,urlUserGet,response})
     }
-})
-console.log("|--------------------------------------------|")
+});
+
+console.log("|-------------------------------------------------|");
 console.info("Emails que existe registro: ", emailFound);
-console.log("|--------------------------------------------|")
+console.log("|-------------------------------------------------|");
 console.warn("Emails que não existe registro: ", emailNotFound);
-console.log("|--------------------------------------------|")
+console.log("|-------------------------------------------------|");
 console.info("Emails Atualizados: ", emailUpdate);
-console.log("|--------------------------------------------|")
+console.log("|-------------------------------------------------|");
 console.info("Usuarios Criados: ", userCreate);
-console.log("|--------------------------------------------|")
+console.log("|-------------------------------------------------|");
 
 
