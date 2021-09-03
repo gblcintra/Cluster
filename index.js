@@ -55,7 +55,7 @@ async function addClient(user) {
     }
 
     finally {
-        emailUpdate.push(data);
+        userCreate.push(data);
     }
 }
 
